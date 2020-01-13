@@ -1,0 +1,177 @@
+#!/bin/bash
+#
+# https://github.com/Aniverse/inexistence
+# Author: Aniverse
+#
+script_update=2020.01.06
+script_version=r10009
+################################################################################################
+
+# Usage:      . s-alias
+# source /etc/bash.bashrc
+# nano +999 /etc/bash.bashrc             nano +999 /usr/local/bin/s-alias
+
+iUser=$1
+wangka=$2
+LogBase=$3
+IntoBashrc=$4
+
+# 150-20
+cat << EOF > /usr/local/bin/s-alias
+#!/bin/bash
+################## Inexistence Mod Start ##################
+
+function setcolor() {
+black=\$(tput setaf 0); red=\$(tput setaf 1)    ; green=\$(tput setaf 2); yellow=\$(tput setaf 3);  bold=\$(tput bold)   ; jiacu=\${normal}\${bold}
+blue=\$(tput setaf 4) ; magenta=\$(tput setaf 5); cyan=\$(tput setaf 6) ; white=\$(tput setaf 7) ;  normal=\$(tput sgr0)
+on_black=\$(tput setab 0); on_red=\$(tput setab 1)    ; on_green=\$(tput setab 2); on_yellow=\$(tput setab 3)
+on_blue=\$(tput setab 4) ; on_magenta=\$(tput setab 5); on_cyan=\$(tput setab 6) ; on_white=\$(tput setab 7)
+shanshuo=\$(tput blink)  ; wuguangbiao=\$(tput civis)    ; guangbiao=\$(tput cnorm)
+underline=\$(tput smul)  ; reset_underline=\$(tput rmul) ; dim=\$(tput dim)
+standout=\$(tput smso)   ; reset_standout=\$(tput rmso)  ; title=\${standout}
+baihuangse=\${white}\${on_yellow}; bailanse=\${white}\${on_blue} ; bailvse=\${white}\${on_green}
+baiqingse=\${white}\${on_cyan}   ; baihongse=\${white}\${on_red} ; baizise=\${white}\${on_magenta}
+heibaise=\${black}\${on_white}   ; heihuangse=\${on_yellow}\${black} ; }
+
+function gclone(){ git clone --depth=1 \$1 && cd \$(echo \${1##*/}) ;}
+io_test() { (LANG=C dd if=/dev/zero of=test_\$\$ bs=64k count=16k conv=fdatasync && rm -f test_\$\$ ) 2>&1 | awk -F, '{io=\$NF} END { print io}' | sed 's/^[ \t]*//;s/[ \t]*\$//' ; }
+iotest() { io1=\$( io_test ) ; echo -e "\n\${bold}硬盘 I/O (第一次测试) : \${yellow}\$io1\${normal}"
+io2=\$( io_test ) ; echo -e "\${bold}硬盘 I/O (第二次测试) : \${yellow}\$io2\${normal}" ; io3=\$( io_test ) ; echo -e "\${bold}硬盘 I/O (第三次测试) : \${yellow}\$io3\${normal}\n" ; }
+
+#ulimit -SHn 999999
+
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+export LANGUAGE=en_US.UTF-8
+export eth=$wangka
+
+alias qba="systemctl start qbittorrent@$iUser"
+alias qbb="systemctl stop qbittorrent@$iUser"
+alias qbc="systemctl status qbittorrent@$iUser"
+alias qbr="systemctl restart qbittorrent@$iUser"
+alias qbl="tail -300 /home/$iUser/.config/qBittorrent/qbittorrent.log"
+alias qbs="nano +40  /home/$iUser/.config/qBittorrent/qBittorrent.conf"
+alias dea="systemctl start deluged"
+alias deb="systemctl stop deluged"
+alias dec="systemctl status deluged"
+alias der="systemctl restart deluged"
+alias del="grep -v TotalTraffic /log/inexistence/app/deluged.log | grep -v 'Successfully loaded' | grep -v 'Saving the state' | tail -n300"
+alias dewa="systemctl start deluge-web"
+alias dewb="systemctl stop deluge-web"
+alias dewc="systemctl status deluge-web"
+alias dewr="systemctl restart deluge-web"
+alias dewl="tail -100 /log/inexistence/app/delugeweb.log"
+alias tra="systemctl start transmission"
+alias trb="systemctl stop transmission"
+alias trc="systemctl status transmission"
+alias trr="systemctl restart transmission"
+alias rta="su $iUser -c 'rt start'"
+alias rtb="su $iUser -c 'rt -k stop'"
+alias rtc="su $iUser -c 'rt'"
+alias rtr="su $iUser -c 'rt -k restart'"
+alias rtscreen="chmod -R 777 /dev/pts && su $iUser -c 'screen -r rtorrent'"
+alias irssia="su $iUser -c 'rt -i start'"
+alias irssib="su $iUser -c 'rt -i -k stop'"
+alias irssic="su $iUser -c 'rt -i'"
+alias irssir="su $iUser -c 'rt -i -k restart'"
+alias irssiscreen="chmod -R 777 /dev/pts && su $iUser -c 'screen -r irssi'"
+alias fga="systemctl start flexget"
+alias fgaa="flexget daemon start --daemonize"
+alias fgb="systemctl stop flexget"
+alias fgc="systemctl status flexget"
+alias fgcc="flexget daemon status"
+alias fgr="systemctl restart flexget"
+alias fgrr="flexget daemon reload-config"
+alias fgl="echo ; tail -300 /root/.config/flexget/flexget.log ; echo"
+alias fgs="nano +60 /root/.config/flexget/config.yml"
+alias fgcheck="flexget check"
+alias fge="flexget execute"
+alias fla="systemctl start flood"
+alias flb="systemctl stop flood"
+alias flc="systemctl status flood"
+alias flr="systemctl restart flood"
+alias sssa="/appex/bin/serverSpeeder.sh start"
+alias sssb="/appex/bin/serverSpeeder.sh stop"
+alias sssc="/appex/bin/serverSpeeder.sh status"
+alias sssr="/appex/bin/serverSpeeder.sh restart"
+alias ssss="nano +60 /etc/serverSpeeder.conf"
+alias lssa="/appex/bin/lotServer.sh start"
+alias lssb="/appex/bin/lotServer.sh stop"
+alias lssc="/appex/bin/lotServer.sh status"
+alias lssr="/appex/bin/lotServer.sh restart"
+alias lsss="nano +60 /appex/etc/config"
+alias nginxr="/etc/init.d/nginx restart"
+
+alias yongle="du -sB GiB"
+alias yongle2="du -sB MiB"
+alias rtyongle="du -sB GiB /home/$iUser/rtorrent/download"
+alias qbyongle="du -sB GiB /home/$iUser/qbittorrent/download"
+alias deyongle="du -sB GiB /home/$iUser/deluge/download"
+alias tryongle="du -sB GiB /home/$iUser/transmission/download"
+alias cdde="cd /home/$iUser/deluge/download"
+alias cdqb="cd /home/$iUser/qbittorrent/download"
+alias cdrt="cd /home/$iUser/rtorrent/download"
+alias cdtr="cd /home/$iUser/transmission/download"
+alias cdin="cd /etc/inexistence/"
+alias cdrut="cd /var/www/rutorrent"
+
+alias rclonec='echo;echo q | rclone config | grep -Ev ".*\)|e/.*"'
+alias scrgd="screen -U -R GoogleDrive"
+alias scrgda="screen -U -r -d GoogleDrive"
+alias scrgdb="screen -S GoogleDrive -X quit"
+function scrb(){ screen -S \$1 -X quit  ;}
+
+alias dddd='rm -rf'
+alias ..='cd ..'
+alias path='echo -e \${PATH//:/\\\\n}'
+alias dh='df -kTh'
+alias aatop="TERM=st atop 1"
+alias px="ps aux | grep -v grep | grep"
+alias tree="tree --dirsfirst"
+alias l="ls -hAv --color --group-directories-first"
+alias ll="ls -hAlvZ --color --group-directories-first"
+alias ios="iostat -dxm 1"
+alias vms="vmstat 1 10"
+alias vns="vnstat -l"
+alias vnss="vnstat -m ; vnstat -d"
+alias vnsa="systemctl start vnstat"
+alias vnsb="systemctl stop vnstat"
+alias vnsc="systemctl status vnstat"
+alias vnsr="systemctl restart vnstat"
+
+alias abench="bash <(wget -qO- https://github.com/Aniverse/A/raw/i/a)"
+alias bench.sh="wget -qO- bench.sh | bash"
+alias fiobench="bash <(wget -qO- https://github.com/amefs/fio-bench/raw/master/fio-bench_zh-cn.sh -o /dev/null)"
+
+alias sousuo="find / -name"
+alias sousuo2="find /home/$iUser -name"
+alias swapon="dd if=/dev/zero of=/etc/.swapfile bs=1M count=2048;mkswap /etc/.swapfile;swapon /etc/.swapfile;swapon -s"
+alias swapoff="swapoff /etc/.swapfile;rm -f /etc/.swapfile"
+
+alias yuan="nano +20 /etc/apt/sources.list"
+alias sshr="sed -i '/.*AllowGroups.*/d' /etc/ssh/sshd_config ; sed -i '/.*PasswordAuthentication.*/d' /etc/ssh/sshd_config ; sed -i '/.*PermitRootLogin.*/d' /etc/ssh/sshd_config ; echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config ; /etc/init.d/ssh restart >/dev/null 2>&1 && echo -e '\n已开启 root 登陆\n'"
+
+alias s-opt="echo && cat $LogBase/installed.log && echo"
+alias s-end="echo && cat $LogBase/end.log"
+
+setcolor
+
+################## Inexistence Mod END ##################
+EOF
+
+# Do not give this script execute permission so when user input s-alias it will be: -bash: /usr/local/bin/s-alias: Permission denied
+chmod 644 /usr/local/bin/s-alias
+
+[[ $IntoBashrc == IntoBashrc ]] && {
+# This may delete user's configuration
+while grep -q "Inexistence Mod" /etc/bash.bashrc ; do
+    sed -i '$d' /etc/bash.bashrc
+done
+# sed -i -n -e :a -e '1,100!{P;N;D;};N;ba' /etc/bash.bashrc
+sed "/#\!\/bin\/bash/"d /usr/local/bin/s-alias >> /etc/bash.bashrc
+}
+
+cat << EOF >> /usr/local/bin/s-alias
+echo "${green}Customed alias is enabled if your current pwd is /etc/inexistence${normal}"
+cd /etc/inexistence
+EOF
